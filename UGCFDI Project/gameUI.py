@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-=======
 import pygame
 import sys
 import random
->>>>>>> c3c964fb4fce2396ce28a7fb96eb75577fe1a5e2
 
-<<<<<<< HEAD
-=======
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
@@ -268,4 +263,3 @@ while True:
 
     clock.tick(120)
     pygame.display.update()
->>>>>>> c3c964fb4fce2396ce28a7fb96eb75577fe1a5e2
