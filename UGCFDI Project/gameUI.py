@@ -7,7 +7,7 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 pygame.display.set_caption("Dino Game")
 
-game_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 24)
+game_font = pygame.font.Font(None, 24)
 
 # Classes
 
@@ -130,7 +130,7 @@ class Ptero(pygame.sprite.Sprite):
 # Variables
 
 
-game_speed = 5
+game_speed = 7
 jump_count = 10
 player_score = 0
 game_over = False
@@ -171,16 +171,43 @@ pygame.time.set_timer(CLOUD_EVENT, 3000)
 
 
 def end_game():
-    global player_score, game_speed
+    global player_score, game_speed, game_over
+
+    screen.fill("white")
     game_over_text = game_font.render("Game Over!", True, "black")
     game_over_rect = game_over_text.get_rect(center=(640, 300))
     score_text = game_font.render(f"Score: {int(player_score)}", True, "black")
     score_rect = score_text.get_rect(center=(640, 340))
+
+    restart_button = pygame.Rect(540, 380, 200, 50)
+    pygame.draw.rect(screen, "gray", restart_button)
+    restart_text = game_font.render("Restart", True, "black")
+    restart_text_rect = restart_text.get_rect(center=restart_button.center)
+
     screen.blit(game_over_text, game_over_rect)
     screen.blit(score_text, score_rect)
-    game_speed = 5
-    cloud_group.empty()
-    obstacle_group.empty()
+    screen.blit(restart_text, restart_text_rect)
+
+    pygame.display.update()
+
+    # Wait for restart button click
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if restart_button.collidepoint(event.pos):
+                    # Reset game state
+                    player_score = 0
+                    game_speed = 7
+                    cloud_group.empty()
+                    obstacle_group.empty()
+                    dinosaur.rect.centery = 360  # Reset dino position
+                    game_over = False
+                    waiting = False
+
 
 
 while True:
@@ -203,7 +230,7 @@ while True:
                 dinosaur.jump()
                 if game_over:
                     game_over = False
-                    game_speed = 5
+                    game_speed = 7
                     player_score = 0
 
     screen.fill("white")
@@ -216,7 +243,7 @@ while True:
         end_game()
 
     if not game_over:
-        game_speed += 0.0025
+        game_speed += 0.0015
         if round(player_score, 1) % 100 == 0 and int(player_score) > 0:
             points_sfx.play()
 
