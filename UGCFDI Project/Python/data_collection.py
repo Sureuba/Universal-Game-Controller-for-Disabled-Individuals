@@ -23,6 +23,7 @@ args = parser.parse_args()
 ser = serial.Serial(args.port, args.baud)
 time.sleep(2)  # Wait for the connection to establish
 
+# FILE OUTPUT 
 
 filename = f"data_{args.label}_{int(time.time())}.csv"
 with open(filename, 'w', newline='') as csvfile:

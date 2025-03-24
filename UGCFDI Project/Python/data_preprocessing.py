@@ -27,7 +27,7 @@ for file in files:
     if 'value' not in df.columns:
         continue
     values = df['value'].values
-    # Compute features: mean, standard deviation, RMS, max, min
+    # Compute features: mean, standard deviation, RMS, max, min used for Layer 1 
     mean_val = np.mean(values)
     std_val = np.std(values)
     rms_val = np.sqrt(np.mean(np.square(values)))
