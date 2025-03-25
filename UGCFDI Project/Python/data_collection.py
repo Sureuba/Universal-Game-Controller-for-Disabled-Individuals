@@ -21,7 +21,9 @@ args = parser.parse_args()
 
 # Initialize serial communication
 ser = serial.Serial(args.port, args.baud)
-time.sleep(2)  # Wait for the connection to establish
+ser.flushInput()
+time.sleep(0.5)  # Wait for the connection to establish
+print("Connection is established")
 
 
 filename = f"data_{args.label}_{int(time.time())}.csv"
@@ -30,7 +32,7 @@ with open(filename, 'w', newline='') as csvfile:
     writer.writerow(["timestamp", "value"])  # CSV header
     start_time = time.time()
     while time.time() - start_time < args.duration:
-        line = ser.readline().decode('utf-8').strip()
+        line = ser.readline().strip()
         try:
             value = int(line)
             writer.writerow([time.time(), value])
