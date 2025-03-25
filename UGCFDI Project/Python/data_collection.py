@@ -25,6 +25,7 @@ ser.flushInput()
 time.sleep(0.5)  # Wait for the connection to establish
 print("Connection is established")
 
+# FILE OUTPUT 
 
 filename = f"data_{args.label}_{int(time.time())}.csv"
 with open(filename, 'w', newline='') as csvfile:

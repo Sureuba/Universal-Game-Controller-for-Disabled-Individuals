@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import subprocess
+import sys
 
 class MotionCaptureApp(tk.Tk):
     def __init__(self):
@@ -25,7 +27,7 @@ class MotionCaptureApp(tk.Tk):
         
         # Create and store all frames
         for F in (WelcomeFrame, MuscleSetupFrame, RequestMotionFrame, ErrorMotionFrame, 
-                  CaptureMotionFrame, SuccessMotionFrame, UpdatedMuscleSetupFrame):
+                  CaptureMotionFrame, SuccessMotionFrame):
             frame = F(container, self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -53,6 +55,14 @@ class MotionCaptureApp(tk.Tk):
         if self.current_motion:
             self.completed_motions.add(self.current_motion)
             self.current_motion = None
+
+    def start_game(self):
+        """Launch the game UI"""
+        try:
+            subprocess.Popen([sys.executable, "Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/UI/gameUI.py"])
+            self.quit()
+        except Exception as e:
+            tk.messagebox.showerror("Error", f"Could not start game: {str(e)}")
 
 class WelcomeFrame(tk.Frame):
     def __init__(self, parent, controller):
@@ -107,7 +117,17 @@ class MuscleSetupFrame(tk.Frame):
         
         # Will be shown when jump is captured
         self.jump_captured_label = ttk.Label(self, text="Captured", font=("Helvetica", 14), foreground="gray")
-    
+        
+        # Start Game button (initially hidden)
+        self.start_game_button = tk.Button(
+            self, 
+            text="Start Game", 
+            command=controller.start_game, 
+            width=15, 
+            height=3,
+            state=tk.DISABLED
+        )
+        
     def on_show(self):
         """Update the state of the frame when shown"""
         # Show or hide "Captured" labels based on completed motions
@@ -120,6 +140,18 @@ class MuscleSetupFrame(tk.Frame):
             self.jump_captured_label.place(relx=0.7, rely=0.7, anchor=tk.CENTER)
         else:
             self.jump_captured_label.place_forget()
+
+        # Show Start Game button when both motions are captured
+        if "run" in self.controller.completed_motions and "jump" in self.controller.completed_motions:
+            self.start_game_button.config(state=tk.NORMAL)
+            self.start_game_button.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
+        else:
+            # Remove the Start Game button if either motion is not captured
+            try:
+                self.start_game_button.place_forget()
+                self.start_game_button.config(state=tk.DISABLED)
+            except:
+                pass
 
 class RequestMotionFrame(tk.Frame):
     def __init__(self, parent, controller):
@@ -210,40 +242,6 @@ class SuccessMotionFrame(tk.Frame):
         """Mark the current motion as completed and return to the muscle setup frame"""
         self.controller.complete_motion_capture()
         self.controller.show_frame("MuscleSetupFrame")
-
-class UpdatedMuscleSetupFrame(tk.Frame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        
-        label = ttk.Label(self, text="Hello, let's set up your muscles", font=("Helvetica", 24))
-        label.pack(pady=20)
-        
-        run_label = ttk.Label(self, text="Run", font=("Helvetica", 14))
-        run_label.place(relx=0.3, rely=0.4, anchor=tk.CENTER)
-        
-        run_button = tk.Button(
-            self, 
-            text="Start", 
-            command=lambda: controller.start_motion_capture("run"), 
-            width=30, 
-            height=6
-        )
-        run_button.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
-        
-        captured_label = ttk.Label(self, text="Captured", font=("Helvetica", 14), foreground="gray")
-        captured_label.place(relx=0.7, rely=0.4, anchor=tk.CENTER)
-        
-        jump_label = ttk.Label(self, text="Jump", font=("Helvetica", 14))
-        jump_label.place(relx=0.3, rely=0.7, anchor=tk.CENTER)
-        
-        jump_button = tk.Button(
-            self, 
-            text="Start", 
-            command=lambda: controller.start_motion_capture("jump"), 
-            width=30, 
-            height=6
-        )
-        jump_button.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
 if __name__ == "__main__":
     app = MotionCaptureApp()
