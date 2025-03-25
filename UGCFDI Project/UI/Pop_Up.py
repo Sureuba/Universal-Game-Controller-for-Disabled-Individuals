@@ -59,7 +59,7 @@ class MotionCaptureApp(tk.Tk):
     def start_game(self):
         """Launch the game UI"""
         try:
-            subprocess.Popen([sys.executable, "UGCFDI Project/UI/gameUI.py"])
+            subprocess.Popen([sys.executable, "Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/UI/gameUI.py"])
             self.quit()
         except Exception as e:
             tk.messagebox.showerror("Error", f"Could not start game: {str(e)}")

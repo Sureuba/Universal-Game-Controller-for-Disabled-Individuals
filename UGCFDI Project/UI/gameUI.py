@@ -31,14 +31,14 @@ class Dino(pygame.sprite.Sprite):
         self.ducking_sprites = []
 
         self.running_sprites.append(pygame.transform.scale(
-            pygame.image.load("UGCFDI Project/assets/Dino1.png"), (80, 100)))
+            pygame.image.load("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/Dino1.png"), (80, 100)))
         self.running_sprites.append(pygame.transform.scale(
-            pygame.image.load("UGCFDI Project/assets/Dino2.png"), (80, 100)))
+            pygame.image.load("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/Dino2.png"), (80, 100)))
 
         self.ducking_sprites.append(pygame.transform.scale(
-            pygame.image.load(f"UGCFDI Project/assets/DinoDucking1.png"), (110, 60)))
+            pygame.image.load(f"Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/DinoDucking1.png"), (110, 60)))
         self.ducking_sprites.append(pygame.transform.scale(
-            pygame.image.load(f"UGCFDI Project/assets/DinoDucking2.png"), (110, 60)))
+            pygame.image.load(f"Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/DinoDucking2.png"), (110, 60)))
 
         self.x_pos = x_pos
         self.y_pos = y_pos
@@ -90,7 +90,7 @@ class Cactus(pygame.sprite.Sprite):
         self.sprites = []
         for i in range(1, 7):
             current_sprite = pygame.transform.scale(
-                pygame.image.load(f"UGCFDI Project/assets/cacti/cactus{i}.png"), (100, 100))
+                pygame.image.load(f"Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/cacti/cactus{i}.png"), (100, 100))
             self.sprites.append(current_sprite)
         self.image = random.choice(self.sprites)
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
@@ -108,10 +108,10 @@ class Ptero(pygame.sprite.Sprite):
         self.sprites = []
         self.sprites.append(
             pygame.transform.scale(
-                pygame.image.load("UGCFDI Project/assets/Ptero1.png"), (84, 62)))
+                pygame.image.load("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/Ptero1.png"), (84, 62)))
         self.sprites.append(
             pygame.transform.scale(
-                pygame.image.load("UGCFDI Project/assets/Ptero2.png"), (84, 62)))
+                pygame.image.load("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/Ptero2.png"), (84, 62)))
         self.current_image = 0
         self.image = self.sprites[self.current_image]
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
@@ -140,11 +140,11 @@ obstacle_cooldown = 1000
 
 # Surfaces
 
-ground = pygame.image.load("UGCFDI Project/assets/ground.png")
+ground = pygame.image.load("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/ground.png")
 ground = pygame.transform.scale(ground, (1280, 20))
 ground_x = 0
 ground_rect = ground.get_rect(center=(640, 400))
-cloud = pygame.image.load("UGCFDI Project/assets/cloud.png")
+cloud = pygame.image.load("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/cloud.png")
 cloud = pygame.transform.scale(cloud, (200, 80))
 
 # Groups
@@ -158,9 +158,9 @@ dinosaur = Dino(50, 360)
 dino_group.add(dinosaur)
 
 # Sounds
-death_sfx = pygame.mixer.Sound("UGCFDI Project/assets/sfx/lose.mp3")
-points_sfx = pygame.mixer.Sound("UGCFDI Project/assets/sfx/100points.mp3")
-jump_sfx = pygame.mixer.Sound("UGCFDI Project/assets/sfx/jump.mp3")
+death_sfx = pygame.mixer.Sound("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/sfx/lose.mp3")
+points_sfx = pygame.mixer.Sound("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/sfx/100points.mp3")
+jump_sfx = pygame.mixer.Sound("Universal-Game-Controller-for-Disabled-Individuals/UGCFDI Project/assets/sfx/jump.mp3")
 
 # Events
 CLOUD_EVENT = pygame.USEREVENT
