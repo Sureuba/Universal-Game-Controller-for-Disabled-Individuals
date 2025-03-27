@@ -13,7 +13,7 @@ from collections import deque
 
 # Load the trained model
 model = tf.keras.models.load_model("emg_classifier.h5")
-# Define label classes as per the training (update these based on your actual labels)
+# Define label classes as per the training (update these based on the labels)
 label_classes = ['rest', 'clench', 'open', 'index', 'bicepCurl']  
 
 # Parameters for the sliding window
