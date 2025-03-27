@@ -14,10 +14,10 @@ from collections import deque
 # Load the trained model
 model = tf.keras.models.load_model("emg_classifier.h5")
 # Define label classes as per the training (update these based on your actual labels)
-label_classes = ['index_finger_up', 'wrist_flexion', 'rest']  # Example labels
+label_classes = ['rest', 'clench', 'open', 'index', 'bicepCurl']  # Example labels
 
 # Parameters for the sliding window
-window_size = 100  # Number of samples in each window
+window_size = 2138  # Number of samples in each window corresponds to 4s ish
 data_buffer = deque(maxlen=window_size)
 
 # Open serial connection (adjust port if necessary)
@@ -37,7 +37,8 @@ def extract_features(window):
 print("Starting real-time classification. Press Ctrl+C to stop.")
 try:
     while True:
-        line = ser.readline().decode('utf-8').strip()
+        line = ser.readline().decode('latin-1').strip()
+
         try:
             value = int(line)
             data_buffer.append(value)
@@ -52,3 +53,5 @@ try:
 except KeyboardInterrupt:
     print("Exiting real-time classification...")
 ser.close()
+
+# model.predict(features) : returns a probability vector, argmax picks the highest

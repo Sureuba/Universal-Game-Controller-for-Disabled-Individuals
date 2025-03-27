@@ -2,7 +2,9 @@
 data_preprocessing.py
 
 This script scans the 'data' folder for CSV files of raw sensor data,
-extracts features, and outputs a combined features.csv file.
+extracts features, 
+and outputs a combined features.csv file.
+
 Assumes each file is named in the format: data_<label>_<timestamp>.csv
 """
 
@@ -27,6 +29,7 @@ for file in files:
     if 'value' not in df.columns:
         continue
     values = df['value'].values
+    
     # Compute features: mean, standard deviation, RMS, max, min used for Layer 1 
     mean_val = np.mean(values)
     std_val = np.std(values)

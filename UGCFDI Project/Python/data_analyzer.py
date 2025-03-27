@@ -5,7 +5,7 @@ import tkinter as tk
 
 # Load the CSV file. Adjust the filename if needed.
 # UGCFDI Project/Python/data_bicepCurlTEST8_1742865503.csv
-filename = "data_indexR1_1742948114.csv"
+filename = "clenchNav10.csv"
 df = pd.read_csv(filename)
 
 # Display the first few rows to confirm the data was loaded correctly.
@@ -20,7 +20,7 @@ ax.set_title("Time vs Voltage")
 ax.grid(True)
 
 # Create a Tkinter window.
-root = tk.Tk()x
+root = tk.Tk()
 root.title("Time vs Voltage Plot")
 
 # Embed the matplotlib figure in the Tkinter window.
@@ -30,4 +30,3 @@ canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 # Start the Tkinter main loop.
 tk.mainloop()
-# UGCFDI Project/Python/data_bicepCurlTEST7_1742865483.csv

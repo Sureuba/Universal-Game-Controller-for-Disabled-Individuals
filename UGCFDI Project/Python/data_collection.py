@@ -19,7 +19,7 @@ parser.add_argument('--label', type=str, required=True, help='Label for the move
 parser.add_argument('--duration', type=int, default=30, help='Recording duration in seconds')
 args = parser.parse_args()
 
-# Initialize serial communication
+# Initialize serial communication for collecting data from muscle sensor 
 ser = serial.Serial(args.port, args.baud)
 ser.flushInput()
 time.sleep(0.5)  # Wait for the connection to establish
@@ -30,7 +30,9 @@ counter = 1
 
 while True:
     # Create a new filename for each run using the label and the counter
-    filename = f"{args.label}{counter}.csv"
+    # filename = f"data_{args.label}{counter}_{int(time.time())}.csv"  #name should have time in it to work with other files
+    filename = f"data_{args.label}_{int(time.time())}.csv"  #name without counter
+    
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["timestamp", "value"])  # CSV header
