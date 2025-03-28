@@ -22,7 +22,7 @@ args = parser.parse_args()
 # Initialize serial communication for collecting data from muscle sensor 
 ser = serial.Serial(args.port, args.baud)
 ser.flushInput()
-time.sleep(0.5)  # Wait for the connection to establish
+time.sleep(2)  # Wait for the connection to establish
 print("Connection is established")
 
 # Counter for file naming
@@ -39,7 +39,8 @@ while True:
         
         start_time = time.time()
         while time.time() - start_time < args.duration:
-            line = ser.readline().strip()
+            line = ser.readline().decode('latin-1').strip()
+            print(line)
             try:
                 value = int(line)
                 writer.writerow([time.time(), value])

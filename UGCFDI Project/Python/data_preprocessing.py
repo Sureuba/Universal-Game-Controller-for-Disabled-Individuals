@@ -2,7 +2,7 @@
 data_preprocessing.py
 
 This script scans the 'data' folder for CSV files of raw sensor data,
-extracts features, 
+extracts enhanced features, 
 and outputs a combined features.csv file.
 
 Assumes each file is named in the format: data_<label>_<timestamp>.csv
@@ -28,15 +28,44 @@ for file in files:
     df = pd.read_csv(file)
     if 'value' not in df.columns:
         continue
-    values = df['value'].values
     
-    # Compute features: mean, standard deviation, RMS, max, min used for Layer 1 
+    values = df['value'].values
+    # If your CSV contains a "timestamp" column with the actual times, use it;
+    # otherwise, assume uniform sampling (you may adjust dx accordingly)
+    if 'timestamp' in df.columns:
+        timestamps = df['timestamp'].values
+        auc = np.trapezoid(values, timestamps)
+    else:
+        # If no timestamp available, use the sample index (adjust dx if needed)
+        auc = np.trapezoid(values)
+    
+    # Basic features
     mean_val = np.mean(values)
     std_val = np.std(values)
     rms_val = np.sqrt(np.mean(np.square(values)))
     max_val = np.max(values)
     min_val = np.min(values)
-    rows.append({"label": label, "mean": mean_val, "std": std_val, "rms": rms_val, "max": max_val, "min": min_val})
+    
+    # Compute first derivative of the signal and its statistics
+    derivative = np.diff(values)
+    if len(derivative) > 0:
+        mean_deriv = np.mean(derivative)
+        std_deriv = np.std(derivative)
+    else:
+        mean_deriv = 0
+        std_deriv = 0
+    
+    rows.append({
+        "label": label, 
+        "auc": auc,
+        "mean": mean_val, 
+        "std": std_val, 
+        "rms": rms_val,
+        "max": max_val,
+        "min": min_val,
+        "mean_deriv": mean_deriv,
+        "std_deriv": std_deriv
+    })
 
 features_df = pd.DataFrame(rows)
 features_df.to_csv("features.csv", index=False)
