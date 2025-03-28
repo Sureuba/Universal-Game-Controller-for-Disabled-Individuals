@@ -153,6 +153,7 @@ def end_game():
                     game_over = False
                     waiting = False
 
+# input to the game (fix this with outputs of AI)
 while True:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_DOWN]:
