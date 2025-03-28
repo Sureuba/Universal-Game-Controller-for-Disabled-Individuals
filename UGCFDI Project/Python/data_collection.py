@@ -49,6 +49,8 @@ while True:
     if any(row[1] > 900 for row in data_rows):
         print("Data contains values above 900; CSV file will not be saved.")
     else:
+        if any(row[1] > 450 for row in data_rows):
+            print("IT HAS OVER 450")
         # Create a new filename for the run using the label and the current timestamp
         filename = f"data_{args.label}_{int(time.time())}.csv"
         with open(filename, 'w', newline='') as csvfile:
