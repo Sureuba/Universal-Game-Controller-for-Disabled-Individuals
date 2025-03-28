@@ -21,7 +21,7 @@ window_size = 2138  # Number of samples in each window corresponds to 4s ish
 data_buffer = deque(maxlen=window_size)
 
 # Open serial connection (adjust port if necessary)
-ser = serial.Serial('COM4', 9600)
+ser = serial.Serial('COM6', 9600)
 time.sleep(2)
 
 def extract_features(window):
