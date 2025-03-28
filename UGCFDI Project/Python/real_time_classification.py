@@ -15,10 +15,10 @@ from collections import deque
 # Load the trained model
 model = tf.keras.models.load_model("emg_classifier.h5")
 # Define label classes as per the training (update these based on your actual labels)
-label_classes = ['rest', 'clench', 'open', 'index']
+label_classes = ['clench', 'index', 'rest']
 
 # Parameters for the sliding window
-WINDOW_SIZE = 500  # Number of samples in each window
+WINDOW_SIZE = 200  # Number of samples in each window
 OVERLAP_PERCENTAGE = 0.5  # 50% overlap between windows
 CONFIDENCE_THRESHOLD = 0.6  # Only report predictions above this confidence
 
@@ -40,7 +40,7 @@ def extract_features(window, timestamps):
     
     # Calculate AUC using the trapezoidal rule
     if len(timestamps) > 1:
-        auc = np.trapz(window, timestamps)
+        auc = np.trapezoid(window, timestamps)
     else:
         auc = 0
 
@@ -86,12 +86,12 @@ try:
                 predicted_label = label_classes[np.argmax(prediction)]
                 
                 # Report prediction only if confidence is high and not repeating too fast
-                if (max_prob > CONFIDENCE_THRESHOLD and 
-                    (current_time - last_prediction_time > prediction_cooldown or 
-                     predicted_label != last_prediction)):
-                    print(f"Predicted movement: {predicted_label} (Confidence: {max_prob:.2f})")
-                    last_prediction = predicted_label
-                    last_prediction_time = current_time
+                # if (max_prob > CONFIDENCE_THRESHOLD and 
+                #     (current_time - last_prediction_time > prediction_cooldown or 
+                #      predicted_label != last_prediction)):
+                print(f"Predicted movement: {predicted_label} (Confidence: {max_prob:.2f})")
+                last_prediction = predicted_label
+                last_prediction_time = current_time
                 
                 # Slide the window with overlap
                 slide_amount = int(WINDOW_SIZE * (1 - OVERLAP_PERCENTAGE))

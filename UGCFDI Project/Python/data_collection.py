@@ -1,8 +1,10 @@
 """
 data_collection.py
 
-This script reads EMG sensor values from the serial port and saves them to a CSV file.
-Usage: python data_collection.py --label <movement_label> --duration <seconds>
+This script reads EMG sensor values from the serial port for a specified duration.
+It accumulates the data in memory and then saves it to a CSV file only if none of the 
+recorded values exceed 500. Otherwise, the file is not saved.
+Usage: python data_collection.py --label <movement_label> --duration <sec
 Example: python data_collection.py --label openR --duration 4
 """
 
@@ -10,6 +12,7 @@ import serial
 import csv
 import time
 import argparse
+import os
 
 # Set up command-line arguments
 parser = argparse.ArgumentParser()
@@ -25,29 +28,35 @@ ser.flushInput()
 time.sleep(2)  # Wait for the connection to establish
 print("Connection is established")
 
-# Counter for file naming
+# Counter for file naming (if needed)
 counter = 1
 
 while True:
-    # Create a new filename for each run using the label and the counter
-    # filename = f"data_{args.label}{counter}_{int(time.time())}.csv"  #name should have time in it to work with other files
-    filename = f"data_{args.label}_{int(time.time())}.csv"  #name without counter
-    
-    with open(filename, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["timestamp", "value"])  # CSV header
-        
-        start_time = time.time()
-        while time.time() - start_time < args.duration:
-            line = ser.readline().decode('latin-1').strip()
-            print(line)
-            try:
-                value = int(line)
-                writer.writerow([time.time(), value])
-            except ValueError:
-                continue  # Skip lines that cannot be converted to int
+    # Collect data in a list (instead of writing immediately to file)
+    data_rows = []
+    start_time = time.time()
+    while time.time() - start_time < args.duration:
+        line = ser.readline().decode('latin-1').strip()
+        print(line)
+        try:
+            value = int(line)
+            timestamp_value = time.time()
+            data_rows.append([timestamp_value, value])
+        except ValueError:
+            continue  # Skip lines that cannot be converted to int
 
-    print(f"Data saved to {filename}")
+    # Check if any reading exceeds the threshold (500)
+    if any(row[1] > 900 for row in data_rows):
+        print("Data contains values above 900; CSV file will not be saved.")
+    else:
+        # Create a new filename for the run using the label and the current timestamp
+        filename = f"data_{args.label}_{int(time.time())}.csv"
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["timestamp", "value"])  # CSV header
+            for row in data_rows:
+                writer.writerow(row)
+        print(f"Data saved to {filename}")
 
     # Ask the user if they want to continue
     user_input = input("Do you want to continue? (Y/N): ")
