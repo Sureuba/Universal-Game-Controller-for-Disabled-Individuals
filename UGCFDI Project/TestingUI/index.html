@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea for interface</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="index.js" defer></Script>
+</head>
+<body>
+        <div class="start">
+            <h1 class="cTitle">Calibating your software</h1>
+            <div class="p-text">please enter how many unique number of movements you think you can accomplish</div>
+            <input type="text" placeholder="enter here" id="inter-num">
+            <button class="generalBtn" id="startbtn" > Start!</button>
+        </div>
+        <!-- <div class="countdowntemp">
+            <h2>Get ready</h2>
+            <p>recording starts in 10 s
+            </p>
+        </div> -->
+
+        <div class="countdown">
+        </div>
+        <div class="record">
+            <div>recording...</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="record-timer" id="recordTimer">0s</div>
+        </div>
+
+        <div class="break"></div>
+        <div class="confirm" hidden>
+            <div class="p-text">Would you like to try again?</div>
+            <div class="confirmbtncontainer">
+                    <button id="gobackbtn" class="generalBtn">Yes</button>
+                    <button id="finishbtn" class="generalBtn">NO</button>
+            </div>
+
+        </div> 
+
+</body>
+</html>
+
+
+
+
