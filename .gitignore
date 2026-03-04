@@ -6,8 +6,6 @@ __pycache__/
 # Model weights (large binary files — retrain locally)
 *.pth
 
-# Recorded EMG data (personal/large)
-data/
 
 # Virtual environments
 venv/
