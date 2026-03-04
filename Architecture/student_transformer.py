@@ -4,6 +4,7 @@ from torch.nn import functional as F
 from Architecture.tokenizer import EMGTokenizer
 from Architecture.transformer_encoder import *
 from Architecture.config import Config
+
 #input raw emg signals, voltage readings
 #output, which gesture, rest, fist , flex, extend wave
 
