@@ -4,7 +4,7 @@ import csv
 import time
 from pathlib import Path
 
-ARDUINO_PORT = 'COM4'
+ARDUINO_PORT = 'COM6'
 BAUD_RATE = 9600
 DURATION = 3
 SAMPLES_PER_GESTURE = 20

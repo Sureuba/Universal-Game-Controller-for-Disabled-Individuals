@@ -32,7 +32,7 @@ def get_command(gesture):
 
 
 
-ARDUINO_PORT = '' #enter port
+ARDUINO_PORT = 'COM6' #enter port
 BAUD_RATE = 9600 # we are changing?
 
 #prediction settings

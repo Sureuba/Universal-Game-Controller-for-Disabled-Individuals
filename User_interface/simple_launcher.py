@@ -110,19 +110,23 @@ class SimpleLauncher:
     def run_collect(self):
         """Run data collection"""
         try:
-            subprocess.Popen([sys.executable, 'Generated_Files/collect_gesture_data.py'])
-            messagebox.showinfo("Launched", "Data collection started.\nConnect your Arduino!")
+            subprocess.Popen(
+                [sys.executable, 'Generated_Files/collect_gesture_data.py'],
+                creationflags=subprocess.CREATE_NEW_CONSOLE
+            )
         except Exception as e:
             messagebox.showerror("Error", f"Could not run collection:\n{e}")
-    
+
     def run_train(self):
         """Run training"""
         if not self.data_exists:
             messagebox.showwarning("Not Ready", "Please run 'Collect Data' first!")
             return
         try:
-            subprocess.Popen([sys.executable, 'Training_Pipeline/main.py'])
-            messagebox.showinfo("Launched", "Training started.\nThis may take 5-10 minutes.\nCheck console for progress.")
+            subprocess.Popen(
+                ['cmd', '/k', sys.executable, 'Training_Pipeline/main.py'],
+                creationflags=subprocess.CREATE_NEW_CONSOLE
+            )
         except Exception as e:
             messagebox.showerror("Error", f"Could not run training:\n{e}")
     

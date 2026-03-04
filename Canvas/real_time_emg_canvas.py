@@ -21,7 +21,7 @@ from Inference.emg_buffer import EMGBuffer
 from Inference.interference_engine import InterferenceEngine
 
 
-ARDUINO_PORT = ''   # fill in your COM port e.g. 'COM4'
+ARDUINO_PORT = 'COM6'   # fill in your COM port e.g. 'COM4'
 BAUD_RATE    = 9600
 
 CANVAS_HOST  = '127.0.0.1'

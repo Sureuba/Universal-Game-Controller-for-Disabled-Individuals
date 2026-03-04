@@ -41,28 +41,23 @@ research/
 │   ├── interference_engine.py  # Loads weights, preprocesses window, runs forward pass
 │   └── real_time_emg.py        # Glue: serial → buffer → engine → socket (port 9999)
 │
-├── Canvas/                     # EMG visualization app
-│   ├── canvas_app.py           # Pygame canvas, listens on port 9998
-│   └── real_time_emg_canvas.py # serial → buffer → engine → JSON socket (port 9998)
-│
-├── Setup/
-│   └── gesture_setup_gui.py    # tkinter GUI to configure gestures (optional/dino only)
+├── Canvas/                         # EMG visualization app
+│   ├── canvas_app.py               # Pygame canvas, listens on port 9998
+│   └── real_time_emg_canvas.py     # serial → buffer → engine → JSON socket (port 9998)
 │
 ├── User_interface/
-│   └── simple_launcher.py      # Main launcher GUI
+│   └── simple_launcher.py          # Main launcher GUI
 │
 ├── Generated_Files/
-│   ├── gesture_mapping.py      # Auto-generated: gesture index → name → command
-│   └── collect_gesture_data.py # Auto-generated: data collection script
+│   └── collect_gesture_data.py     # Data collection script (run via launcher)
 │
 ├── archive/
-│   └── dino_game.py            # Pygame Dino game, listens on port 9999
+│   └── dino_game.py                # Pygame Dino game, listens on port 9999
 │
-├── data/                       # Recorded CSV files (one per gesture recording)
-├── assets/                     # Fonts, sprites, sounds for the Dino game
-├── gesture_config.json         # Active gesture configuration
-├── student_model_best.pth      # Best saved weights (by val loss)
-└── student_model_final.pth     # Final epoch weights
+├── data/                           # Recorded CSV files (one per gesture recording)
+├── assets/                         # Fonts, sprites, sounds for the Dino game
+├── student_model_best.pth          # Best saved weights (by val loss)
+└── student_model_final.pth         # Final epoch weights
 ```
 
 ---
@@ -302,8 +297,9 @@ Yes, but several places need updating in sync:
 2. `Generated_Files/collect_gesture_data.py` — add the new gesture name to `GESTURES`
 3. `Training_Pipeline/csv_loader.py` — add the new gesture to `gesture_map` and the
    `files_by_gesture` dict
-4. `Inference/interference_engine.py` — update the fallback `GESTURE_MAP`
-5. Re-collect data for all gestures and retrain from scratch
+4. `Inference/interference_engine.py` — update `GESTURE_MAP` (hardcoded dict at top of file)
+5. `Inference/real_time_emg.py` — add a new `elif` branch in `get_command()`
+6. Re-collect data for all gestures and retrain from scratch
 
 ---
 
