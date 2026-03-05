@@ -153,6 +153,7 @@ class EMGTestApp:
                 if not data:
                     break
                 cmd = data.decode().strip()
+                # connects gesture from AI to controls
                 print(f"[EMG] {cmd}")
                 if   cmd == "jump": pygame.event.post(pygame.event.Event(pygame.USEREVENT + 1))
                 elif cmd == "duck": pygame.event.post(pygame.event.Event(pygame.USEREVENT + 2))
