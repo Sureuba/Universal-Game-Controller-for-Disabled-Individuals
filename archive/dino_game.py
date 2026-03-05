@@ -658,9 +658,10 @@ class App:
                     if mode == 'emg':
                         dinosaur.unduck()
 
-            # Collision
+            # Collision (use shrunken hitboxes to avoid phantom deaths from transparent padding)
             if (not game_over and
-                    pygame.sprite.spritecollide(dino_group.sprite, obstacle_group, False)):
+                    pygame.sprite.spritecollide(
+                        dino_group.sprite, obstacle_group, False, _collide_hitbox)):
                 game_over    = True
                 high_score   = max(high_score, player_score)
                 if self.death_sfx:
@@ -842,6 +843,13 @@ class Dino(pygame.sprite.Sprite):
                 self.velocity_y   = 0
                 self.is_jumping   = False
 
+    @property
+    def hitbox(self):
+        # Shrink to roughly the visible body, ignoring transparent edges
+        if self.ducking:
+            return self.rect.inflate(-38, -18)   # 110x60 → 72x42
+        return self.rect.inflate(-24, -30)        # 80x100 → 56x70
+
     def _animate(self):
         self._frame = (self._frame + 0.05) % 2
         self.image  = (self.duck_sprites if self.ducking else self.run_sprites)[int(self._frame)]
@@ -866,6 +874,10 @@ class Cactus(pygame.sprite.Sprite):
         self.rect  = self.image.get_rect(center=(x, y))
         self.speed = speed
 
+    @property
+    def hitbox(self):
+        return self.rect.inflate(-40, -8)   # 100x100 → 60x92 (cactus trunk is narrow)
+
     def update(self):
         self.rect.x -= self.speed
         if self.rect.right < 0:
@@ -887,12 +899,21 @@ class Ptero(pygame.sprite.Sprite):
         self.rect   = self.image.get_rect(center=(1300, random.choice([270, 295, 340])))
         self.speed  = speed
 
+    @property
+    def hitbox(self):
+        return self.rect.inflate(-22, -16)   # 84x62 → 62x46
+
     def update(self):
         self._frame = (self._frame + 0.025) % 2
         self.image  = Ptero._cache[int(self._frame)]
         self.rect.x -= self.speed
         if self.rect.right < 0:
             self.kill()
+
+
+def _collide_hitbox(a, b):
+    """Collision using each sprite's shrunken hitbox instead of the full image rect."""
+    return a.hitbox.colliderect(b.hitbox)
 
 
 if __name__ == '__main__':
