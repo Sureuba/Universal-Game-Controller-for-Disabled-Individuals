@@ -35,14 +35,14 @@ class SimpleLauncher:
 
         tk.Label(
             status_frame,
-            text=f"✓ Training Data" if self.data_exists else "✗ Training Data (not collected)",
+            text=f" Training Data" if self.data_exists else " Training Data (not collected)",
             font=('Arial', 10),
             fg='green' if self.data_exists else 'red'
         ).pack(anchor='w', padx=10, pady=2)
 
         tk.Label(
             status_frame,
-            text=f"✓ Trained Model" if self.model_exists else "✗ Trained Model (not trained)",
+            text=f" Trained Model" if self.model_exists else " Trained Model (not trained)",
             font=('Arial', 10),
             fg='green' if self.model_exists else 'red'
         ).pack(anchor='w', padx=10, pady=2)
@@ -80,7 +80,7 @@ class SimpleLauncher:
         dino_state = 'normal' if (ready and self.game_exists) else 'disabled'
         tk.Button(
             play_frame,
-            text="▶ DINO GAME",
+            text=" DINO GAME",
             width=35,
             height=2,
             bg=dino_color,
@@ -96,7 +96,7 @@ class SimpleLauncher:
         canvas_state = 'normal' if (ready and self.canvas_exists) else 'disabled'
         tk.Button(
             play_frame,
-            text="▶ EMG CANVAS",
+            text=" EMG CANVAS",
             width=35,
             height=2,
             bg=canvas_color,
