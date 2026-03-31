@@ -9,7 +9,7 @@ from Architecture.config import Config
 #output, which gesture, rest, fist , flex, extend wave
 
 class StudentTransformer(nn.Module):
-    def __init__(self, num_gestures = Config.num_gestures, n_embed = Config.n_embed, n_head = Config.n_head, n_layer = Config.n_layer, dropout = Config.dropout):
+    def __init__(self, num_gestures = Config.num_gestures, n_embed = Config.n_embed, n_head = Config.n_head, n_layer = Config.n_layer, dropout = Config.dropout, class_weights = None):
         #num_gestures = how many gestures to recognize 
         #n_embed = 128, how many numbers per token, basically describing it
         #n_head = 4, how many attention heads, eah head learns to pay attenton to different patterns in the signal, they all get combined
@@ -36,6 +36,8 @@ class StudentTransformer(nn.Module):
 
         #classifaction head
         self.classifier = nn.Linear(n_embed, num_gestures)
+        # class_weights moves to device automatically with model.to(device)
+        self.register_buffer('class_weights', class_weights)
         #takes the 128 numbers, output 5 scores, one per gesture, instead of vocab size, same as num getures = 5
 
     def forward(self, x, targets = None):
@@ -59,7 +61,7 @@ class StudentTransformer(nn.Module):
         if targets is None:
             loss = None # no targets, just predicting, not training
         else:
-            loss = F.cross_entropy(logits, targets)
+            loss = F.cross_entropy(logits, targets, weight=self.class_weights)
 
         return logits, loss
         #logits are the 5 scores, loss is how wrong we are

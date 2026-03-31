@@ -21,7 +21,7 @@ class Config:
     ''' how many emg channels there are, we curretnyl have 1'''
     num_gestures = 3
     ''' how many gestures, right now the gestures are clench, rest, and wrist, but hopefully add more'''
-    n_embed = 128
+    n_embed = 64
     ''' how many numbers represent each token, basically 128 dimensions of describing it, the more, more model capacity, better accuracy, more params, slow
             the less of this jus the opposite of if it was more
     '''
@@ -31,13 +31,13 @@ class Config:
         increasing means more diverse patterns more params, less means less diversity, might might patterns
         MUST DIVIDE EVENLY INTO n_embed, so in this case 128/4 is 32 per head, 32 numbers or dimensions
     '''
-    n_layer = 4
+    n_layer = 2
     '''the depth of the model, how many transformers are stacked
         increasing means more processing epth, better at complex patterns, slower, might overfit
         decreasing is opposite of that
         3 to 4 layers should be fine    
     '''
-    dropout = 0.2
+    dropout = 0.3
     ''' dropout is just a technique DURING TRAINING it 'drops' neurons out, making them 0, so the model has to lear with less neurons
     
     '''

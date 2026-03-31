@@ -23,7 +23,8 @@ def load_csv_data_split(
         train_split: Train/val split ratio (default from Config)
     
     Returns:
-        train_windows, train_labels, val_windows, val_labels
+        train_windows, trai
+        n_labels, val_windows, val_labels
     """
     
     gesture_map = {
@@ -93,23 +94,55 @@ def load_csv_data_split(
     return train_windows_tensor, train_labels_tensor, val_windows_tensor, val_labels_tensor
 
 
+def trim_to_active(voltages: np.ndarray, gesture_name: str) -> np.ndarray:
+    """
+    Remove the leading rest-period from clench/wrist recordings.
+    The serial buffer fills with rest-level data during the countdown,
+    so recordings start flat before the gesture activates. This detects
+    the activation onset and trims from there.
+    Rest files are returned unchanged — their flat signal IS the gesture.
+    """
+    if gesture_name == 'rest':
+        return voltages  # rest signal is flat by design, nothing to trim
+
+    baseline_std = np.std(voltages[:200])  # first 200 samples = true pre-gesture rest
+    baseline_mean = np.mean(voltages[:200])
+    threshold = baseline_mean + 3.0 * baseline_std  # 3-sigma above baseline
+
+    active_mask = voltages > threshold
+    onset = np.argmax(active_mask)  # first sample exceeding threshold
+
+    if onset == 0 and not active_mask[0]:
+        return voltages  # no onset found, return as-is
+
+    buffer = 50  # keep 50 samples before onset for context
+    start = max(0, onset - buffer)
+    return voltages[start:]
+
+
 def process_file(csv_file: Path, window_size: int, overlap: float) -> List[np.ndarray]:
     """
     Process one CSV file into overlapping windows.
-    
+
     Args:
         csv_file: Path to CSV file
         window_size: Samples per window
         overlap: Overlap fraction (0.75 = 75% overlap)
-    
+
     Returns:
         List of windows (numpy arrays)
     """
+    gesture_name = csv_file.stem.split('_')[1]  # data_clench_123 → clench
+
     df = pd.read_csv(csv_file)
     values = df['value'].values
 
-    # Convert ADC (0-1023) to voltage only — do NOT center the whole file
-    voltages = (values / 1023.0) * 5.0  # ADC → 0-5V
+    # Convert ADC to voltage only — do NOT center the whole file
+    # ESP32: 12-bit ADC (0-4095), 3.3V logic — must match interference_engine.preprocess_window()
+    voltages = (values / 4095.0) * 3.3  # ADC → 0-3.3V
+
+    # Remove leading rest-period caused by serial buffer buildup during countdown
+    voltages = trim_to_active(voltages, gesture_name)
 
     # Create overlapping windows, centering each window individually
     # This matches inference exactly: interference_engine.preprocess_window()

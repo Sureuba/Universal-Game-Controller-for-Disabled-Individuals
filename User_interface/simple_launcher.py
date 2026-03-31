@@ -3,7 +3,10 @@ import tkinter as tk
 from tkinter import messagebox
 import subprocess
 import sys
+import os
 from pathlib import Path
+
+BASE = Path(os.path.dirname(os.path.abspath(__file__))).parent  # project root
 
 class SimpleLauncher:
     def __init__(self, root):
@@ -12,10 +15,11 @@ class SimpleLauncher:
         self.root.geometry("500x530")
 
         # Check status
-        self.model_exists = Path('student_model_best.pth').exists()
-        self.game_exists = Path('archive/dino_game.py').exists()
-        self.canvas_exists = Path('Canvas/canvas_app.py').exists()
-        self.data_exists = Path('data').exists() and len(list(Path('data').glob('*.csv'))) > 0
+        self.model_exists = (BASE / 'student_model_best.pth').exists()
+        self.game_exists = (BASE / 'archive/dino_game.py').exists()
+        self.canvas_exists = (BASE / 'Canvas/canvas_app.py').exists()
+        data_dir = BASE / 'data'
+        self.data_exists = data_dir.exists() and len(list(data_dir.glob('*.csv'))) > 0
         
         self.setup_ui()
     
@@ -111,7 +115,7 @@ class SimpleLauncher:
         """Run data collection"""
         try:
             subprocess.Popen(
-                [sys.executable, 'Generated_Files/collect_gesture_data.py'],
+                [sys.executable, str(BASE / 'Generated_Files/collect_gesture_data.py')],
                 creationflags=subprocess.CREATE_NEW_CONSOLE
             )
         except Exception as e:
@@ -124,7 +128,7 @@ class SimpleLauncher:
             return
         try:
             subprocess.Popen(
-                ['cmd', '/k', sys.executable, 'Training_Pipeline/main.py'],
+                ['cmd', '/k', sys.executable, str(BASE / 'Training_Pipeline/main.py')],
                 creationflags=subprocess.CREATE_NEW_CONSOLE
             )
         except Exception as e:
@@ -140,7 +144,7 @@ class SimpleLauncher:
             return
 
         try:
-            subprocess.Popen([sys.executable, 'Canvas/canvas_app.py'])
+            subprocess.Popen([sys.executable, str(BASE / 'Canvas/canvas_app.py')])
             print("[LAUNCHER] Canvas started!")
         except Exception as e:
             messagebox.showerror("Error", f"Could not start canvas:\n{e}")
@@ -155,7 +159,7 @@ class SimpleLauncher:
     def start_emg_canvas(self):
         """Start canvas EMG control"""
         try:
-            subprocess.Popen([sys.executable, 'Canvas/real_time_emg_canvas.py'])
+            subprocess.Popen([sys.executable, str(BASE / 'Canvas/real_time_emg_canvas.py')])
             messagebox.showinfo(
                 "Canvas Ready!",
                 "EMG canvas control is now active!\n\nYour muscle signals will paint the canvas.\nDifferent gestures = different colors.\nContraction strength = brush speed + size."
@@ -164,41 +168,36 @@ class SimpleLauncher:
             messagebox.showerror("Error", f"Could not start canvas EMG:\n{e}")
 
     def play_game(self):
-        """Start game and EMG control"""
+        """Start EMG terminal first, then game"""
         if not self.model_exists:
             messagebox.showwarning("Not Ready", "Please complete setup steps 1-2 first!")
             return
-        
+
         if not self.game_exists:
             messagebox.showerror("Error", "dino_game.py not found in this folder!")
             return
-        
-        # Start game first
+
+        # Start real_time_emg in a visible terminal first (it will wait for game)
         try:
-            subprocess.Popen([sys.executable, 'archive/dino_game.py'])
-            print("[LAUNCHER] Game started!")
-        except Exception as e:
-            messagebox.showerror("Error", f"Could not start game:\n{e}")
-            return
-        
-        # Wait 2 seconds, then start EMG control
-        messagebox.showinfo(
-            "Game Starting",
-            "Dino game window opened!\n\nStarting EMG control in 2 seconds...\n\nControls:\n• Keyboard: SPACE=jump, DOWN=duck\n• EMG: Your muscle gestures"
-        )
-        
-        self.root.after(2000, self.start_emg)
-    
-    def start_emg(self):
-        """Start EMG control after game"""
-        try:
-            subprocess.Popen([sys.executable, 'Inference/real_time_emg.py'])
-            messagebox.showinfo(
-                "Ready to Play!",
-                "EMG control is now active!\n\nPerform your gestures to control the dino.\n\nTo stop: Close the game window."
+            subprocess.Popen(
+                ['cmd', '/k', sys.executable, str(BASE / 'Inference/real_time_emg.py')],
+                creationflags=subprocess.CREATE_NEW_CONSOLE
             )
         except Exception as e:
             messagebox.showerror("Error", f"Could not start EMG control:\n{e}")
+            return
+
+        # Then start the game
+        try:
+            subprocess.Popen([sys.executable, str(BASE / 'archive/dino_game.py')])
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not start game:\n{e}")
+            return
+
+        messagebox.showinfo(
+            "Launching",
+            "EMG terminal and game are starting!\n\nIn the game, click 'EMG Muscle Control' to connect."
+        )
 
 
 if __name__ == '__main__':

@@ -2,36 +2,48 @@
 import serial
 import csv
 import time
+import os
 from pathlib import Path
 
-ARDUINO_PORT = 'COM6'
-BAUD_RATE = 9600
-DURATION = 3
-SAMPLES_PER_GESTURE = 20
-GESTURES = ['rest', 'clench', 'wrist']  # must match csv_loader.py gesture names
+ARDUINO_PORT = 'COM3'
+BAUD_RATE = 115200
+DURATION = 8
+SAMPLES_PER_GESTURE = 40
+GESTURES = ['rest', 'clench', 'wrist']
 
-Path("data").mkdir(exist_ok=True)
+DATA_DIR = Path(os.path.dirname(os.path.abspath(__file__))).parent / 'data'
+DATA_DIR.mkdir(exist_ok=True)
 
 def collect_gesture(gesture_name, sample_num):
     ser = serial.Serial(ARDUINO_PORT, BAUD_RATE)
     ser.reset_input_buffer()
     time.sleep(2)
-    
-    filename = f"data/data_{gesture_name}_{int(time.time())}.csv"
+
+    filename = str(DATA_DIR / f"data_{gesture_name}_{int(time.time())}.csv")
     
     print(f"\nRecording {gesture_name} (sample {sample_num}/{SAMPLES_PER_GESTURE})")
-    print("Get ready... 3... 2... 1... GO!")
-    
+    print("Get ready...")
+    time.sleep(1)
+    print("3...")
+    time.sleep(1)
+    print("2...")
+    time.sleep(1)
+    print("1...")
+    time.sleep(1)
+    print("GO! -> hold the gesture now!")
+    ser.reset_input_buffer()  # flush stale samples that built up during countdown
+
     data = []
     start_time = time.time()
     
     while time.time() - start_time < DURATION:
         line = ser.readline().decode('latin-1').strip()
         try:
-            value = int(line)
+            parts = line.split()
+            value = int(parts[-1])  # last value is the muscle signal
             timestamp = time.time()
             data.append([timestamp, value])
-        except ValueError:
+        except (ValueError, IndexError):
             continue
     
     with open(filename, 'w', newline='') as f:
@@ -48,15 +60,32 @@ def main():
     print("GESTURE DATA COLLECTION")
     print("=" * 70)
     print(f"\nCollecting {SAMPLES_PER_GESTURE} samples for each of {len(GESTURES)} gestures.")
-    print(f"Each sample is {DURATION} seconds long.\n")
-    
+    print(f"Each sample is {DURATION} seconds long.")
+    print()
+    print("HOW TO RECORD:")
+    print("  - When you see GO! -> start the gesture IMMEDIATELY, no waiting")
+    print("  - HOLD the gesture steady for the full 8 seconds, do not pulse it")
+    print("  - When it says 'Relax' -> fully relax, let your arm go completely limp")
+    print()
+    print("GESTURES:")
+    print("  REST   -> completely relaxed, no tension at all")
+    print("  CLENCH -> firm fist, held continuously")
+    print("  WRIST  -> wrist extension: bend hand BACKWARD (away from you), held continuously")
+    print()
+
     input("Press Enter when ready to start...")
-    
+
     for gesture in GESTURES:
         print(f"\n{'-' * 70}")
         print(f"GESTURE: {gesture.upper()}")
         print(f"{'-' * 70}")
-        print(f"Instructions: Perform '{gesture}' when recording starts.")
+        if gesture == 'rest':
+            print("ACTION: Completely relax your arm and hand. No tension at all.")
+        elif gesture == 'clench':
+            print("ACTION: Make a firm fist and hold it. Keep squeezing for the full 8 seconds.")
+        elif gesture == 'wrist':
+            print("ACTION: Bend your hand BACKWARD (away from you) — wrist extension, not flexion.")
+            print("        Keep it bent back for the full 8 seconds. Do NOT curl it toward you.")
         input("Press Enter to begin...")
         
         for i in range(1, SAMPLES_PER_GESTURE + 1):

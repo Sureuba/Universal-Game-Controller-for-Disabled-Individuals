@@ -17,8 +17,13 @@
 
 import torch
 import numpy as np
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Architecture.student_transformer import StudentTransformer
 from Architecture.config import Config
+
+_INFERENCE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 GESTURE_MAP = {0: 'rest', 1: 'clench', 2: 'wrist'}
 
@@ -26,7 +31,7 @@ GESTURE_MAP = {0: 'rest', 1: 'clench', 2: 'wrist'}
 class InterferenceEngine:
     '''loads the traied model and makes predictions on raw emg windows'''
 
-    def __init__(self, model_path = 'student_model_best.pth', device = 'cpu' '''later we should replace with gpu if we have gpu computer like fardin's '''):
+    def __init__(self, model_path = 'student_model_best.pth', device = 'cpu'): # later replace with gpu if available
         self.device = device
 
         self.gesture_map = GESTURE_MAP
@@ -40,7 +45,8 @@ class InterferenceEngine:
         )
         #at this point we have loaded the model, but it has random weights
 
-        self.model.load_state_dict(torch.load(model_path, map_location=device))
+        resolved_path = os.path.join(_INFERENCE_DIR, model_path) if not os.path.isabs(model_path) else model_path
+        self.model.load_state_dict(torch.load(resolved_path, map_location=device), strict=False)
         #actually getting the numbers for model to use
         self.model.to(device)
         self.model.eval()
@@ -55,7 +61,7 @@ class InterferenceEngine:
         #takes input of python list from ardunio, the 200, converts it to numpy array with 32 bbit floats, because math operations are faster on numpy arrays
         #pytorch models uses 32 bit floats, not the 64 bit python default
         ''' input would be [23, 24, 25, 26, ...] and then after it would be array([23, 24, 25, 26, ...], dtype = float32)'''
-        window= (window / 1023.0) * 5 #?
+        window= (window / 4095.0) * 3.3 # ESP32: 12-bit ADC (0-4095), 3.3V logic
         ''' converts arduino's raw adc reading to actual voltage
         
             arduio adc outputs 0-1023(10 bit resolution)

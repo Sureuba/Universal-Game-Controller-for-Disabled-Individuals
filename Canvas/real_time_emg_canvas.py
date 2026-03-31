@@ -21,8 +21,8 @@ from Inference.emg_buffer import EMGBuffer
 from Inference.interference_engine import InterferenceEngine
 
 
-ARDUINO_PORT = 'COM6'   # fill in your COM port e.g. 'COM4'
-BAUD_RATE    = 9600
+ARDUINO_PORT = 'COM3'
+BAUD_RATE    = 115200
 
 CANVAS_HOST  = '127.0.0.1'
 CANVAS_PORT  = 9998
@@ -48,8 +48,9 @@ def run():
     time.sleep(2)
     print(f"[EMG] Arduino connected on {ARDUINO_PORT}")
 
+    _MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'student_model_best.pth')
     buffer = EMGBuffer(buffer_size=2000, window_size=200)
-    engine = InterferenceEngine('student_model_best.pth', device='cpu')
+    engine = InterferenceEngine(_MODEL_PATH, device='cpu')
 
     canvas_socket = connect_to_canvas()
 
@@ -58,8 +59,9 @@ def run():
     while not buffer.is_ready():
         line = ser.readline().decode('latin-1').strip()
         try:
-            buffer.add_sample(int(line))
-        except ValueError:
+            parts = line.split()
+            buffer.add_sample(int(parts[-1]))
+        except (ValueError, IndexError):
             continue
 
     print("[EMG] Buffer ready - streaming to canvas")
@@ -71,8 +73,9 @@ def run():
         while True:
             line = ser.readline().decode('latin-1').strip()
             try:
-                value = int(line)
-            except ValueError:
+                parts = line.split()
+                value = int(parts[-1])
+            except (ValueError, IndexError):
                 continue
 
             buffer.add_sample(value)

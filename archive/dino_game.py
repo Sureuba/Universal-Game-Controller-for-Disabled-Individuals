@@ -8,6 +8,8 @@ import json
 import os
 from datetime import datetime
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 W, H        = 1280, 720
 GROUND_Y    = 360
 DINO_GROUND = 360
